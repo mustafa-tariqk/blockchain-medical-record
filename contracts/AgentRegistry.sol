@@ -55,9 +55,10 @@ contract AgentRegistry {
     function kick (address rip) public onlySigners {
     
     }
-
-    function rescind (address prospective) public {
     
+    function rescind (address prospective) public {
+        require(proposer[prospective] == msg.sender);
+        clearVotes(prospective);
     }
 
     function clearVotes(address prospective) internal {
