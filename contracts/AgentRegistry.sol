@@ -99,9 +99,43 @@ contract AgentRegistry {
         }
     }
 
-
     function vote(address prospective, bool value) public onlySigners() {
-    
+        require(isProspective[prospective] || isKicked[prospective]);
+
+        if(voteInfo[prospective][msg.sender] && !value) {
+            yayVotes[prospective] -= 1;
+        }
+        if(!voteInfo[prospective][msg.sender] && value) {
+            yayVotes[prospective] += 1;
+        }
+        voteInfo[prospective][msg.sender] = value;
+        if(!hasVoted[prospective][msg.sender]) {
+            voters[prospective].push(msg.sender);
+        }
+        hasVoted[prospective][msg.sender] = true;
+
+        if(!value) return;
+        if(yayVotes[prospective] < (signers.length+1)/2) return;
+        if(isKicked[prospective]) {
+            bool overwrite = false;
+            for(uint i = 0; i < signers.length; i++) {
+                if(overwrite) {
+                    signers[i - 1] = signers[i];
+                }
+                if(signers[i] == prospective) {
+                    overwrite = true;
+                }
+            }
+            delete(signers[signers.length-1]);
+            signers.length -= 1;
+            isSigner[prospective] = false;
+            RemoveSigner(prospective);
+        } else {
+            signers.push(prospective);
+            isSigner[prospective] = true;
+            AddSigner(prospective);
+        }
+    clearVotes(prospective);
     }
 
     function getAgentByName(string name) public constant returns (address) {
