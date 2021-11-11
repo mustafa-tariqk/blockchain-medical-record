@@ -73,11 +73,11 @@ contract AgentRegistry {
     }
 
     function getAgentName(address addr) public constant returns (string) {
-        return agentInfo[addr];
+        return agentInfo[addr].name;
     }
 
     function getAgentContractAddr(address addr) public constant returns (address) {
-        return agentFromContract[addr];
+        return agentInfo[addr].contractAddr;
     }
 
     function getAgentHost(address addr) public constant returns (string) {
