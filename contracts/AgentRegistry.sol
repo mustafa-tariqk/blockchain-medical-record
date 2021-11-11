@@ -62,8 +62,43 @@ contract AgentRegistry {
     }
 
     function clearVotes(address prospective) internal {
-    
+        uint i;
+        for(i = 0; i < voters[prospective].length; i++) {
+            delete voteInfo[prospective][voters[prospective][i]];
+            delete hasVoted[prospective][voters[prospective][i]];
+        }
+        delete voters[prospective];
+        delete proposer[prospective];
+        delete yayVotes[prospective];
+
+        bool overwrite = false;
+        if(isProspective[prospective]) {
+            delete isProspective[prospective];
+            for(i = 0; i < prospectives.length; i++) {
+                if(overwrite) {
+                    prospectives[i - 1] = prospectives[i];
+                }
+                if(prospectives[i] == prospective) {
+                    overwrite = true;
+                }
+            }
+            delete(prospectives[prospectives.length-1]);
+            prospectives.length -= 1;
+        } else {
+            delete isKicked[prospective];
+            for(i = 0; i < kicked.length; i++) {
+                if(overwrite) {
+                    kicked[i - 1] = kicked[i];
+                }
+                if(kicked[i] == prospective) {
+                    overwrite = true;
+                }
+            }
+            delete(kicked[kicked.length-1]);
+            kicked.length -= 1;
+        }
     }
+
 
     function vote(address prospective, bool value) public onlySigners() {
     
