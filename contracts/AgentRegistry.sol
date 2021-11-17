@@ -15,8 +15,9 @@ contract AgentRegistry {
     mapping(address => address[]) voters;
     mapping(address => mapping(address => bool)) hasVoted;
     mapping(address => mapping(address => bool)) voteInfo;
-    mapping(address => uint256) yayVotes;
 
+    mapping(address => uint) yayVotes;
+  
     address[] prospectives;
     address[] kicked;
     mapping(address => bool) public isProspective;
@@ -149,57 +150,64 @@ contract AgentRegistry {
         clearVotes(prospective);
     }
 
-    function getAgentByName(string name) public constant returns (address) {}
 
-    function getAgentName(address addr) public constant returns (string) {}
+    function getAgentByName(string name) public constant returns (address) {
+        return agentByName[name];
+    }
 
-    function getAgentContractAddr(address addr)
-        public
-        constant
-        returns (address)
-    {}
+    function getAgentName(address addr) public constant returns (string) {
+        return agentInfo[addr].name;
+    }
 
-    function getAgentHost(address addr) public constant returns (string) {}
+    function getAgentContractAddr(address addr) public constant returns (address) {
+        return agentInfo[addr].contractAddr;
+    }
 
-    function getNumSigners() public constant returns (uint256) {}
+    function getAgentHost(address addr) public constant returns (string) {
+        return agentInfo[addr].host;
+    }
 
-    function getSigner(uint256 idx) public constant returns (address) {}
+    function getNumSigners() public constant returns (uint) {
+        return signers.length;
+    }
 
-    function getNumVoters(address prospective)
-        public
-        constant
-        returns (uint256)
-    {}
+    function getSigner(uint idx) public constant returns (address) {
+        return signers[idx];
+    }
 
-    function getVoter(address prospective, uint256 idx)
-        public
-        constant
-        returns (address)
-    {}
+    function getNumVoters(address prospective) public constant returns (uint) {
+        return voters[prospective].length;
+    }
 
-    function getVoteInfo(address prospective, address signer)
-        public
-        constant
-        returns (bool)
-    {}
+    function getVoter(address prospective, uint idx) public constant returns (address) {
+        return voters[prospective][idx];
+    }
 
-    function getNumYayVotes(address prospective)
-        public
-        constant
-        returns (uint256)
-    {}
+    function getVoteInfo(address prospective, address signer) public constant returns (bool) {
+        return voteInfo[prospective][singer];
+    }
 
-    function getNumProspectives() public constant returns (uint256) {}
+    function getNumYayVotes(address prospective) public constant returns (uint) {
+        return yayVotes[prospective].length;
+    }
 
-    function getProspective(uint256 idx) public constant returns (address) {}
+    function getNumProspectives() public constant returns (uint) {
+        return prospectives.length;
+    }
 
-    function getNumKicked() public constant returns (uint256) {}
+    function getProspective(uint idx) public constant returns (address) {
+        return prospectives[idx];
+    }
 
-    function getKicked(uint256 idx) public constant returns (address) {}
+    function getNumKicked() public constant returns (uint) {
+        return kicked.length;
+    }
 
-    function getProposer(address prospective)
-        public
-        constant
-        returns (address)
-    {}
+    function getKicked(uint idx) public constant returns (address) {
+        return kicked[idx];
+    }
+
+    function getProposer(address prospective) public constant returns (address) {
+        return proposer[prospective];
+    }
 }
