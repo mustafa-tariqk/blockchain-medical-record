@@ -36,18 +36,24 @@ contract Agent {
     }
 
     function addRelationship(address r) public isOwner {
-    
+        relationships.push(r);
     }
 
     function getNumRelationships() public constant returns (uint) {
-    
+        return relationships.length;
     }
 
     function getNumEnabledOwners() public constant returns (uint) {
-    
+        uint numEnabled = 0;
+        for(int i = 0; i < custodianEnabled.length; i++) {
+            if(custodianEnabled[i]) {
+                numEnabled++;
+            }
+        }
+        return numEnabled;
     }
 
     function getNumCustodians() public constant returns (uint) {
-    
+        return custodians.length;
     }
 }
