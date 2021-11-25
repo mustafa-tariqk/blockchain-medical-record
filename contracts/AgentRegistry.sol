@@ -46,11 +46,7 @@ contract AgentRegistry {
 
     function propose(string name) public onlySigners {
         require(!isProspective[msg.sender]);
-
-        if (agentByName[name] == msg.sender) {
-            //check if name already exists *not sure about this code
-            revert();
-        }
+        require(agentByName[name] == msg.sender);
 
         prospectives.push(msg.sender);
         isProspective[msg.sender] = true;
