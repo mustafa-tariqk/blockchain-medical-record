@@ -24,40 +24,64 @@ contract Relationship {
     }
 
     function Relationship(address _provider) public {
-        
+        patron = msg.sender;
+        provider = _provider;
     }
 
     function setProviderAddress(string addr) public {
-        
+        providerAddr = addr;
     }
 
     function setProviderName(string name) public {
-        
+        providerName = name;
     }
 
     function addViewerGroup() public isPatron {
+        viewerGroups.length += 1;
     }
 
     function removeViewerGroup(uint viewerGroup) public isPatron {
-        
+        uint numViewers = viewerGroups[viewerGroup].length;
+        uint i;
+        for(i = 0; i < numViewers; i++) {
+            isViewer[viewerGroups[viewerGroup][i]] = false;
+        }
+
+        uint numGroups = viewerGroups.length;
+        for(i = viewerGroup+1; i < numGroups; i++) {
+            viewerGroups[i - 1] = viewerGroups[i];
+        }
+        delete(viewerGroups[numGroups-1]);
+        viewerGroups.length -= 1;
     }
 
     function addViewer(string name, uint viewerGroup, address viewer, string provAddr) public isPatron {
+        require(!isViewer[viewer]);
+
         isViewer[viewer] = true;
         viewerGroups[viewerGroup].push(viewer);
-        viewerByName[name] = viewer;
-        viewerInfo[viewer] = Viewer({name:name, providerAddr:provAddr});
+        viewerInfo[viewer] = Viewer(name, provAddr);
     }
 
     function removeViewer(uint viewerGroup, address viewer) public isPatron {
-        delete isViewer[viewer];
-        for (int i = 0; i < viewerGroups[viewerGroup].length; i++) {
+        require(isViewer[viewer]);
+
+        isViewer[viewer] = false;
+        uint numViewers = viewerGroups[viewerGroup].length;
+        bool overwrite = false;
+
+        for (uint i = 0; i < numViewers; i++) {
+            if (overwrite) {
+                viewerGroups[viewerGroup][i - 1] = viewerGroups[viewerGroup][i];
+            }
+
             if (viewerGroups[viewerGroup][i] == viewer) {
-                delete viewerGroups[viewerGroup][i];
+                overwrite = true;
             }
         }
-        delete viewerByName[viewerInfo[viewer].name];
-        delete viewerInfo[viewer];
+        delete(viewerGroups[viewerGroup][numViewers-1]);
+        viewerGroups[viewerGroup].length -= 1;
+        delete(viewerInfo[viewer]);
     }
 
     function getNumViewerGroups() public constant returns(uint) {
@@ -77,11 +101,11 @@ contract Relationship {
     }
 
     function getViewerName(address addr) public constant returns(string) {
-        return viewerInfo[viewer].name;
+        return viewerInfo[addr].name;
     }
 
     function terminate() public {
-        require(msg.sender ==  patron);
-        selfdestruct(msg.sender);
+        if(msg.sender != patron && msg.sender != provider) revert();
+        selfdestruct(patron);
     }
 }
