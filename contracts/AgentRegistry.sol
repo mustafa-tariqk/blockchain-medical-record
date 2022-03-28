@@ -16,7 +16,7 @@ contract AgentRegistry {
     mapping(address => mapping(address => bool)) hasVoted;
     mapping(address => mapping(address => bool)) voteInfo;
 
-    mapping(address => uint256) yayVotes;
+    mapping(address => uint) yayVotes;
 
     address[] prospectives;
     address[] kicked;
@@ -33,17 +33,27 @@ contract AgentRegistry {
         _;
     }
 
-    function AgentRegistry(
-        string name,
-        address contractAddr,
-        string host
-    ) public {}
+    function AgentRegistry(string name, address contractAddr, string host) public {
+        signers.push(msg.sender);
+        agentInfo[msg.sender] = Agent(name, contractAddr, host);
+        agentByName[name] = msg.sender;
+        agentFromContract[contractAddr] = msg.sender;
+        isSigner[msg.sender] = true;
+    }
 
-    function setAgentName(string name) public onlySigners {}
+    function setAgentName(string name) public onlySigners {
+        //throw if the name is taken.
+        require(agentByName[name] == address(0));
+        agentInfo[msg.sender].name = name;
+        agentByName[name] = msg.sender;
+    }
 
-    function setAgentContractAddr(address contractAddr) public {}
+    function setAgentContractAddr(address contractAddr) public {
+        agentInfo[msg.sender].contractAddr = contractAddr;
+        agentFromContract[contractAddr] = msg.sender;
+    }
 
-    function setAgentHost(string host) public {}
+    function setAgentHost(string host) public { agentInfo[msg.sender].host = host; }
 
     function propose(string name) public onlySigners {
         require(!isProspective[msg.sender]);
@@ -52,11 +62,16 @@ contract AgentRegistry {
         prospectives.push(msg.sender);
         isProspective[msg.sender] = true;
         proposer[msg.sender] = msg.sender;
+
+        //throw if name is taken.
+        require(agentByName[name] == address(0));
         agentInfo[msg.sender].name = name;
     }
 
     function kick(address rip) public onlySigners {
+        require(isSigner[msg.sender]);
         require(!isKicked[rip]); //make sure address rip is not already kicked
+        require(signers.length > 2);
 
         kicked.push(rip); //push the address rip to list of kicked addresses
         isKicked[rip] = true;
@@ -203,7 +218,7 @@ contract AgentRegistry {
         constant
         returns (uint256)
     {
-        return yayVotes[prospective].length;
+        return yayVotes[prospective];
     }
 
     function getNumProspectives() public constant returns (uint256) {
