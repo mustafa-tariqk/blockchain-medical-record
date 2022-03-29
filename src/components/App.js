@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Agent from "../abis/Agent.json";
 import AgentGroup from "../abis/AgentGroup.json";
@@ -12,6 +11,9 @@ import Web3 from "web3";
 
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 import makeBlockie from "ethereum-blockies-base64";
 
@@ -70,69 +72,36 @@ class App extends Component {
     if (networkData) {
       const agent = new web3.eth.Contract(Agent.abi, networkData.address);
       this.setState({ agent });
-
-      const agentGroup = new web3.eth.Contract(
-        AgentGroup.abi,
-        AgentGroup.networks[networkId]
-      );
-      this.setState({ agentGroup });
-
-      const agentRegistry = new web3.eth.Contract(
-        AgentRegistry.abi,
-        AgentRegistry.networks[networkId]
-      );
-      this.setState({ agentRegistry });
-
-      const allAccessRelationship = new web3.eth.Contract(
-        AllAccessRelationship.abi,
-        AllAccessRelationship.networks[networkId]
-      );
-      this.setState({ allAccessRelationship });
-
-      const deadmanSwitch = new web3.eth.Contract(
-        DeadmanSwitch.abi,
-        DeadmanSwitch.networks[networkId]
-      );
-      this.setState({ deadmanSwitch });
-
-      const relationship = new web3.eth.Contract(
-        Relationship.abi,
-        Relationship.networks[networkId]
-      );
-      this.setState({ relationship });
     } else {
-      console.log("Can't see the abi");
-      // If contract is not on current network, then request switch to Polygon
+      // If contract is not on current network, then request switch to Ethereum
       try {
-        /**await window.ethereum.request({
+        await window.ethereum.request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x1" }],
-        });**/
+          params: [{ chainId: "0x539" }],
+        });
       } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
-        /** 
         if (switchError.code === 4902) {
           try {
             await window.ethereum.request({
               method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainId: "0x89",
-                  chainName: "Polygon Mainnet",
+                  chainId: "0x539",
+                  chainName: "Ganache",
                   nativeCurrency: {
-                    name: "Matic",
-                    symbol: "MATIC",
+                    name: "QMIND",
+                    symbol: "QMIND",
                     decimals: 18,
                   },
-                  rpcUrls: ["https://polygon-rpc.com/"],
-                  blockExplorerUrls: ["https://polygonscan.com/"],
+                  rpcUrls: ["http://127.0.0.1:7545"],
                 },
               ],
             });
           } catch (addError) {}
-        }*/
+        }
       }
-      // window.location.reload(false);
+      window.location.reload(false);
     }
   }
 
@@ -149,27 +118,43 @@ class App extends Component {
             <p>Waiting for Wallet</p>
           </div>
         ) : (
-          <div className="text-center mt-5">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                navigator.clipboard.writeText(this.state.account);
-              }}
-            >
-              <img
-                height={30}
-                width={30}
-                alt="Unique generated icon for Ethereum account"
-                src={makeBlockie(this.state.account)}
-              />
-              {" " +
-                this.state.account.slice(0, 8) +
-                "..." +
-                this.state.account.slice(-8) +
-                " 📋"}
-            </Button>
-            <br /> <br />
-          </div>
+          <Container>
+            <Row>
+              <Col>
+                {" "}
+                <div className="text-center mt-5">
+                  <p>
+                    <strong>First Name:</strong> John
+                  </p>
+                  <p>
+                    <strong>Last Name:</strong> Doe
+                  </p>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      navigator.clipboard.writeText(this.state.account);
+                    }}
+                  >
+                    <img
+                      height={30}
+                      width={30}
+                      alt="Unique generated icon for Ethereum account"
+                      src={makeBlockie(this.state.account)}
+                    />
+                    {" " +
+                      this.state.account.slice(0, 8) +
+                      "..." +
+                      this.state.account.slice(-8) +
+                      " 📋"}
+                  </Button>
+                  <br /> <br />
+                </div>
+              </Col>
+              <Col md="lg">
+                <p>rest of the frontend</p>
+              </Col>
+            </Row>
+          </Container>
         )}
       </div>
     );
