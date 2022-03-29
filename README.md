@@ -4,7 +4,7 @@ Install truffle
 
 Deploy to local emulator:
 
-`truffle migrate --network ganache --reset`
+`truffle migrate --network development --reset`
 
 Run Tests
 
