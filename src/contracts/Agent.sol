@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.0;
 
 contract Agent {
     address public agent;
@@ -10,7 +10,7 @@ contract Agent {
     modifier isOwner() {
         bool enable;
         if (agentEnabled && msg.sender == agent) enable = true;
-        for (uint i = 0; i < custodians.length; i++) {
+        for (uint256 i = 0; i < custodians.length; i++) {
             if (custodianEnabled[i] && msg.sender == custodians[i]) {
                 enable = true;
                 break;
@@ -20,8 +20,8 @@ contract Agent {
         _;
     }
 
-    function Agent() public {
-        agent = agent.sender;
+    constructor() public {
+        agent = msg.sender;
         agentEnabled = true;
     }
 
@@ -41,7 +41,7 @@ contract Agent {
 
     function removeCustodian(address addr) public isOwner {
         bool overwrite = false;
-        for (uint i = 0; i < custodians.length; i++) {
+        for (uint256 i = 0; i < custodians.length; i++) {
             if (overwrite) {
                 custodians[i - 1] = custodians[i];
                 custodianEnabled[i - 1] = custodianEnabled[i];
@@ -51,7 +51,6 @@ contract Agent {
                 overwrite = true;
             }
         }
-
 
         //decrement arrays by 1
         //delete last element of both arrays.
@@ -82,7 +81,7 @@ contract Agent {
     function getNumEnabledOwners() public constant returns (uint256) {
         uint256 numEnabled = 0;
         if (agentEnabled) numEnabled++;
-        for (uint i = 0; i < custodianEnabled.length; i++) {
+        for (uint256 i = 0; i < custodianEnabled.length; i++) {
             if (custodianEnabled[i]) {
                 numEnabled++;
             }

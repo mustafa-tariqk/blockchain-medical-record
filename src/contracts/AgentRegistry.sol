@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.0;
 
 contract AgentRegistry {
     struct Agent {
@@ -16,7 +16,7 @@ contract AgentRegistry {
     mapping(address => mapping(address => bool)) hasVoted;
     mapping(address => mapping(address => bool)) voteInfo;
 
-    mapping(address => uint) yayVotes;
+    mapping(address => uint256) yayVotes;
 
     address[] prospectives;
     address[] kicked;
@@ -33,7 +33,11 @@ contract AgentRegistry {
         _;
     }
 
-    function AgentRegistry(string name, address contractAddr, string host) public {
+    constructor(
+        string name,
+        address contractAddr,
+        string host
+    ) public {
         signers.push(msg.sender);
         agentInfo[msg.sender] = Agent(name, contractAddr, host);
         agentByName[name] = msg.sender;
@@ -53,7 +57,9 @@ contract AgentRegistry {
         agentFromContract[contractAddr] = msg.sender;
     }
 
-    function setAgentHost(string host) public { agentInfo[msg.sender].host = host; }
+    function setAgentHost(string host) public {
+        agentInfo[msg.sender].host = host;
+    }
 
     function propose(string name) public onlySigners {
         require(!isProspective[msg.sender]);
@@ -152,11 +158,11 @@ contract AgentRegistry {
             delete (signers[signers.length - 1]);
             signers.length -= 1;
             isSigner[prospective] = false;
-            RemoveSigner(prospective);
+            emit RemoveSigner(prospective);
         } else {
             signers.push(prospective);
             isSigner[prospective] = true;
-            AddSigner(prospective);
+            emit AddSigner(prospective);
         }
         clearVotes(prospective);
     }
@@ -210,7 +216,7 @@ contract AgentRegistry {
         constant
         returns (bool)
     {
-        return voteInfo[prospective][singer];
+        return voteInfo[prospective][signer];
     }
 
     function getNumYayVotes(address prospective)

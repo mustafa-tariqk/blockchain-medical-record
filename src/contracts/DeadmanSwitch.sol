@@ -1,17 +1,17 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.0;
 
 contract DeadmanSwitch {
     address public agent;
     address[] public relationships;
-    uint public lastTouch;
-    uint public timeout;
+    uint256 public lastTouch;
+    uint256 public timeout;
 
     modifier isOwner() {
-        if(msg.sender != agent) revert();
+        if (msg.sender != agent) revert();
         _;
     }
 
-    function DeadmanSwitch() public {
+    constructor() public {
         agent = msg.sender;
     }
 
@@ -23,7 +23,7 @@ contract DeadmanSwitch {
         relationships.push(r);
     }
 
-    function getNumRelationships() public constant returns (uint) {
+    function getNumRelationships() public constant returns (uint256) {
         return relationships.length;
     }
 
@@ -31,11 +31,11 @@ contract DeadmanSwitch {
         lastTouch = now;
     }
 
-    function setTimeout(uint _timeout) public isOwner {
+    function setTimeout(uint256 _timeout) public isOwner {
         timeout = _timeout;
     }
 
-    function isAlive() public constant returns (bool){
+    function isAlive() public constant returns (bool) {
         return now <= lastTouch + timeout;
     }
 }

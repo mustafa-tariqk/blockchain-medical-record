@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.0;
 
 contract Relationship {
     address public patron;
@@ -19,11 +19,11 @@ contract Relationship {
     uint256 constant UINT256_MAX = ~uint256(0);
 
     modifier isPatron() {
-        if(msg.sender != patron) revert();
+        if (msg.sender != patron) revert();
         _;
     }
 
-    function Relationship(address _provider) public {
+    constructor(address _provider) public {
         patron = msg.sender;
         provider = _provider;
     }
@@ -40,22 +40,27 @@ contract Relationship {
         viewerGroups.length += 1;
     }
 
-    function removeViewerGroup(uint viewerGroup) public isPatron {
-        uint numViewers = viewerGroups[viewerGroup].length;
-        uint i;
-        for(i = 0; i < numViewers; i++) {
+    function removeViewerGroup(uint256 viewerGroup) public isPatron {
+        uint256 numViewers = viewerGroups[viewerGroup].length;
+        uint256 i;
+        for (i = 0; i < numViewers; i++) {
             isViewer[viewerGroups[viewerGroup][i]] = false;
         }
 
-        uint numGroups = viewerGroups.length;
-        for(i = viewerGroup+1; i < numGroups; i++) {
+        uint256 numGroups = viewerGroups.length;
+        for (i = viewerGroup + 1; i < numGroups; i++) {
             viewerGroups[i - 1] = viewerGroups[i];
         }
-        delete(viewerGroups[numGroups-1]);
+        delete (viewerGroups[numGroups - 1]);
         viewerGroups.length -= 1;
     }
 
-    function addViewer(string name, uint viewerGroup, address viewer, string provAddr) public isPatron {
+    function addViewer(
+        string name,
+        uint256 viewerGroup,
+        address viewer,
+        string provAddr
+    ) public isPatron {
         require(!isViewer[viewer]);
 
         isViewer[viewer] = true;
@@ -63,14 +68,14 @@ contract Relationship {
         viewerInfo[viewer] = Viewer(name, provAddr);
     }
 
-    function removeViewer(uint viewerGroup, address viewer) public isPatron {
+    function removeViewer(uint256 viewerGroup, address viewer) public isPatron {
         require(isViewer[viewer]);
 
         isViewer[viewer] = false;
-        uint numViewers = viewerGroups[viewerGroup].length;
+        uint256 numViewers = viewerGroups[viewerGroup].length;
         bool overwrite = false;
 
-        for (uint i = 0; i < numViewers; i++) {
+        for (uint256 i = 0; i < numViewers; i++) {
             if (overwrite) {
                 viewerGroups[viewerGroup][i - 1] = viewerGroups[viewerGroup][i];
             }
@@ -79,33 +84,37 @@ contract Relationship {
                 overwrite = true;
             }
         }
-        delete(viewerGroups[viewerGroup][numViewers-1]);
+        delete (viewerGroups[viewerGroup][numViewers - 1]);
         viewerGroups[viewerGroup].length -= 1;
-        delete(viewerInfo[viewer]);
+        delete (viewerInfo[viewer]);
     }
 
-    function getNumViewerGroups() public constant returns(uint) {
+    function getNumViewerGroups() public constant returns (uint256) {
         return viewerGroups.length;
     }
 
-    function getNumViewers(uint group) public constant returns(uint) {
+    function getNumViewers(uint256 group) public constant returns (uint256) {
         return viewerGroups[group].length;
     }
 
-    function getViewer(uint group, uint index) public constant returns(address) {
+    function getViewer(uint256 group, uint256 index)
+        public
+        constant
+        returns (address)
+    {
         return viewerGroups[group][index];
     }
 
-    function getViewerByName(string name) public constant returns(address) {
+    function getViewerByName(string name) public constant returns (address) {
         return viewerByName[name];
     }
 
-    function getViewerName(address addr) public constant returns(string) {
+    function getViewerName(address addr) public constant returns (string) {
         return viewerInfo[addr].name;
     }
 
     function terminate() public {
-        if(msg.sender != patron && msg.sender != provider) revert();
+        if (msg.sender != patron && msg.sender != provider) revert();
         selfdestruct(patron);
     }
 }

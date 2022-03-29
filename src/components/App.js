@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Agent from "../../abis/Agent.json";
-import AgentGroup from "../../abis/AgentGroup.json";
-import AgentRegistry from "../../abis/AgentRegistry.json";
-import AllAccessRelationship from "../../abis/AllAccessRelationship.json";
-import DeadmanSwitch from "../../abis/DeadmanSwitch.json";
-import Relationship from "../../abis/Relationship.json";
+import Agent from "../abis/Agent.json";
+import AgentGroup from "../abis/AgentGroup.json";
+import AgentRegistry from "../abis/AgentRegistry.json";
+import AllAccessRelationship from "../abis/AllAccessRelationship.json";
+import DeadmanSwitch from "../abis/DeadmanSwitch.json";
+import Relationship from "../abis/Relationship.json";
 
 import Web3 from "web3";
 
@@ -101,12 +101,13 @@ class App extends Component {
       );
       this.setState({ relationship });
     } else {
+      console.log("Can't see the abi");
       // If contract is not on current network, then request switch to Polygon
       try {
-        await window.ethereum.request({
+        /**await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x1" }],
-        });
+        });**/
       } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
         /** 
@@ -131,60 +132,46 @@ class App extends Component {
           } catch (addError) {}
         }*/
       }
-      window.location.reload(false);
+      // window.location.reload(false);
     }
   }
 
   render() {
     return (
-      <BrowserRouter base="/">
-        <div>
-          {this.state.loading ? (
-            <div className="text-center mt-5">
-              <Spinner
-                className="mx-auto d-block"
-                animation="border"
-                role="status"
+      <div>
+        {this.state.loading ? (
+          <div className="text-center mt-5">
+            <Spinner
+              className="mx-auto d-block"
+              animation="border"
+              role="status"
+            />
+            <p>Waiting for Wallet</p>
+          </div>
+        ) : (
+          <div className="text-center mt-5">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                navigator.clipboard.writeText(this.state.account);
+              }}
+            >
+              <img
+                height={30}
+                width={30}
+                alt="Unique generated icon for Ethereum account"
+                src={makeBlockie(this.state.account)}
               />
-              <p>Waiting for Wallet</p>
-            </div>
-          ) : (
-            <div className="text-center mt-5">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  navigator.clipboard.writeText(this.state.account);
-                }}
-              >
-                <img
-                  height={30}
-                  width={30}
-                  alt="Unique generated icon for Ethereum account"
-                  src={makeBlockie(this.state.account)}
-                />
-                {" " +
-                  this.state.account.slice(0, 8) +
-                  "..." +
-                  this.state.account.slice(-8) +
-                  " 📋"}
-              </Button>
-              <br /> <br />
-            </div>
-          )}
-        </div>
-
-        <Routes>
-          <Route path="/" element={<CreateJar {...this.state} />} />
-          <Route
-            path="/a"
-            element={this.state.loading ? null : <Stats {...this.state} />}
-          />
-          <Route
-            path="/*"
-            element={this.state.loading ? null : <JarPage {...this.state} />}
-          />
-        </Routes>
-      </BrowserRouter>
+              {" " +
+                this.state.account.slice(0, 8) +
+                "..." +
+                this.state.account.slice(-8) +
+                " 📋"}
+            </Button>
+            <br /> <br />
+          </div>
+        )}
+      </div>
     );
   }
 }
