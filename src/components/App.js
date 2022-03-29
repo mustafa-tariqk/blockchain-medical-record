@@ -14,10 +14,12 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
 
 import makeBlockie from "ethereum-blockies-base64";
 
 import "./App.css";
+import { ListGroup } from "react-bootstrap";
 
 class App extends Component {
   constructor(props) {
@@ -118,17 +120,10 @@ class App extends Component {
             <p>Waiting for Wallet</p>
           </div>
         ) : (
-          <Container>
+          <Container fluid>
             <Row>
-              <Col>
-                {" "}
+              <Col md={3} className="bg-info">
                 <div className="text-center mt-5">
-                  <p>
-                    <strong>First Name:</strong> John
-                  </p>
-                  <p>
-                    <strong>Last Name:</strong> Doe
-                  </p>
                   <Button
                     variant="secondary"
                     onClick={() => {
@@ -146,7 +141,16 @@ class App extends Component {
                       "..." +
                       this.state.account.slice(-8) +
                       " 📋"}
-                  </Button>
+                  </Button>{" "}
+                  <br /> <br />
+                </div>
+                <Card>
+                  <Card.Body>
+                    <strong>First Name:</strong> John <br />
+                    <strong>Last Name:</strong> Doe <br />
+                  </Card.Body>
+                </Card>{" "}
+                <div className="text-center mt-5">
                   <br /> <br />
                 </div>
               </Col>
