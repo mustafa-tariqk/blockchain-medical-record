@@ -9,17 +9,19 @@ import Relationship from "../abis/Relationship.json";
 
 import Web3 from "web3";
 
+import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
+import Table from "react-bootstrap/Table";
+import Image from "react-bootstrap/Image";
+import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
 
 import makeBlockie from "ethereum-blockies-base64";
 
 import "./App.css";
-import { ListGroup } from "react-bootstrap";
+import networkOverview from "../NetworkOverview.png";
 
 class App extends Component {
   constructor(props) {
@@ -120,42 +122,43 @@ class App extends Component {
             <p>Waiting for Wallet</p>
           </div>
         ) : (
-          <Container fluid>
+          <Container style={{ marginLeft: 0 }}>
             <Row>
-              <Col md={3} className="bg-info">
-                <div className="text-center mt-5">
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      navigator.clipboard.writeText(this.state.account);
-                    }}
-                  >
-                    <img
-                      height={30}
-                      width={30}
-                      alt="Unique generated icon for Ethereum account"
-                      src={makeBlockie(this.state.account)}
-                    />
-                    {" " +
-                      this.state.account.slice(0, 8) +
-                      "..." +
-                      this.state.account.slice(-8) +
-                      " 📋"}
-                  </Button>{" "}
-                  <br /> <br />
-                </div>
-                <Card>
-                  <Card.Body>
-                    <strong>First Name:</strong> John <br />
-                    <strong>Last Name:</strong> Doe <br />
-                  </Card.Body>
-                </Card>{" "}
-                <div className="text-center mt-5">
-                  <br /> <br />
-                </div>
+              <Col
+                sm={4}
+                style={{ backgroundColor: "#E5E9F0", height: "100vh" }}
+              >
+                <Table borderless>
+                  <tbody>
+                    <tr>
+                      <td>First Name:</td>
+                      <td>John</td>
+                    </tr>
+                    <tr>
+                      <td>Last Name:</td>
+                      <td>Doe</td>
+                    </tr>
+                    <tr>
+                      <td>Contract:</td>
+                      <td>Agent</td>
+                    </tr>
+                  </tbody>
+                </Table>
+
+                <Button variant="light" size="sm" block>
+                  Home
+                </Button>
+
+                <Button variant="light" size="sm" block>
+                  Your Network
+                </Button>
+
+                <Button variant="light" size="sm" block>
+                  Edit Relationships
+                </Button>
               </Col>
-              <Col md="lg">
-                <p>rest of the frontend</p>
+              <Col>
+                <Image fluid src={networkOverview} />
               </Col>
             </Row>
           </Container>

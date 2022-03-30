@@ -18,3 +18,11 @@ body {
 .main {
   margin-bottom: -200px;
 }
+
+.react-bs-container-body tr {
+  border-top-style: hidden !important;
+}
+
+.react-bs-container-header tr {
+  border-bottom-style: hidden !important;
+}
